@@ -1,4 +1,18 @@
--- local QBCore = exports['qb-core']:GetCoreObject()
+if Config.framework = 'qbcore'
+    console('The framework is QBCore')
+    exports['qb-core']:GetCoreObject()
+else Config.framwork = 'esx'
+    console('The framework is ESX')
+    ESX = exports["es_extended"]:getSharedObject()
+else Config.framwork = 'oldesx'
+    console('The framework is Old ESX')
+    while ESX == nil do
+		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+		Citizen.Wait(0)
+	end
+-- else Config.framework = 'custom'
+-- Your Framework get core
+end
 
 
 RegisterCommand('livery', function(source, args)
@@ -13,10 +27,20 @@ RegisterCommand('livery', function(source, args)
             SetVehicleLivery(veh, livery)
 
         else
-            -- QBCore.Functions.Notify("Invalid Livery", "error")
+            if Config.Notify = 'esx'
+                TriggerClientEvent('esx:showNotification', source, Notify(locale('invalid_livery'), 'error'))
+            elseif Config.Notify = 'qbcore'
+                QBCore.Functions.Notify(locale('invalid_livery'), "error")
+            --elseif Config.Notify = 'custom'
+            -- Your Notify
+            end
         end
-    else
-        -- QBCore.Functions.Notify("You are not in vehicle", "error")
+    else Config.Notify = 'esx'
+        TriggerClientEvent('esx:showNotification', source, Notify(locale('not_veh'), 'error'))
+    else Config.Notify = 'qbcore'
+        QBCore.Functions.Notify(locale('not_veh'), "error")
+    -- else Config.Notify = 'custom'
+    -- Your Notify
     end
 end)
 
@@ -37,11 +61,11 @@ CreateThread(function()
             text = "Este vehículo no tiene livery"
 
         else
-            text = "You are not in vehicle"
+            text = "No estas en el vehiculo"
         end
 
 
-        TriggerEvent('chat:addSuggestion', '/livery', 'Cambiar livery', {
+        TriggerEvent('chat:addSuggestion', '/livery', 'Cambiar pintura', {
             { name="livery", help=text },
         })
     end
